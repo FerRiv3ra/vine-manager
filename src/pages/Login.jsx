@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Alert from '../components/Alert';
 import axiosClient from '../config/axiosClient';
 import useAuth from '../hooks/useAuth';
+import Logo from '../assets/lvc.png';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -53,9 +54,10 @@ const Login = () => {
 
   return (
     <>
-      <h1 className="text-green-700 font-black text-6xl">
+      <img src={Logo} className=" w-32 m-auto" />
+      <h1 className="text-green-700 font-black text-4xl text-center">
         Login to{' '}
-        <span className="text-slate-700 block text-5xl">The Vine Manager</span>
+        <span className="text-slate-700 block text-3xl">The Vine Manager</span>
       </h1>
 
       {showAlert && <Alert alert={alert} />}

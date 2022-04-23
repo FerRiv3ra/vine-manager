@@ -60,7 +60,7 @@ const Users = () => {
               className="text-gray-700 uppercase font-bold text-sm"
             >
               {' '}
-              ADMIN
+              ADMINS
             </label>
           </div>
         </div>

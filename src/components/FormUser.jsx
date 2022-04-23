@@ -2,8 +2,7 @@ import { useRef, useState } from 'react';
 
 import React from 'react';
 
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
 
 import { useForm } from '../hooks/useForm';
 import useUsers from '../hooks/useUsers';
@@ -15,7 +14,7 @@ const FormUser = () => {
   const radioRoleRef = useRef(null);
   const radioChildRef = useRef(null);
 
-  const { submitUser } = useUsers();
+  const { submitUser, showAlert } = useUsers();
 
   const navigate = useNavigate();
 
@@ -118,16 +117,6 @@ const FormUser = () => {
     setTimeout(() => {
       navigate('/users');
     }, 6000);
-  };
-
-  const showAlert = (msg = '', error = true, autoClose = 5000) => {
-    if (error) {
-      toast.error(msg);
-    } else {
-      toast.success(msg, {
-        autoClose,
-      });
-    }
   };
 
   return (

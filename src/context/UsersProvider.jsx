@@ -1,6 +1,9 @@
 import { createContext, useEffect, useState } from 'react';
 import axiosClient from '../config/axiosClient';
 
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 const UsersContext = createContext();
 
 const UsersProvider = ({ children }) => {
@@ -26,11 +29,78 @@ const UsersProvider = ({ children }) => {
     getUsers();
   }, []);
 
+  const showAlert = (msg = '', error = true, autoClose = 5000) => {
+    if (error) {
+      toast.error(msg);
+    } else {
+      toast.success(msg, {
+        autoClose,
+      });
+    }
+  };
+
   const getUser = async (id) => {
     setIsLoading(true);
     const data = users.filter((user) => user.uid === id);
     setUser(data[0]);
     setIsLoading(false);
+  };
+
+  const deleteUser = async (id) => {
+    try {
+      const token = localStorage.getItem('x-token');
+
+      const config = {
+        headers: {
+          'Content-Type': 'application/json',
+          'x-token': token,
+        },
+      };
+      const { data } = await axiosClient.delete(`/users/${id}`, config);
+      setUsers(users.filter((user) => user.uid !== id));
+      return data;
+    } catch (error) {
+      return error.response.data;
+    }
+  };
+
+  const unblockUser = async (id) => {
+    const [userE] = users.filter((user) => user.uid === id);
+    let toiletries = 3;
+    if (userE) {
+      if (userE.no_household - userE.child_cant > 1) {
+        toiletries = 6;
+      }
+    }
+    try {
+      const config = {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      };
+
+      const body = { blocked: false, role: 'USER_ROLE', toiletries };
+
+      const { data } = await axiosClient.put(
+        `/users/${id}`,
+        JSON.stringify(body),
+        config
+      );
+
+      setUsers(
+        users.filter((user) => {
+          if (user.uid === id) {
+            return data;
+          }
+          return user;
+        })
+      );
+
+      setUser(data);
+      return data;
+    } catch (error) {
+      return error.response.data;
+    }
   };
 
   const submitUser = async (user) => {
@@ -61,7 +131,16 @@ const UsersProvider = ({ children }) => {
 
   return (
     <UsersContext.Provider
-      value={{ users, submitUser, getUser, user, isLoading }}
+      value={{
+        users,
+        submitUser,
+        getUser,
+        user,
+        isLoading,
+        deleteUser,
+        showAlert,
+        unblockUser,
+      }}
     >
       {children}
     </UsersContext.Provider>
