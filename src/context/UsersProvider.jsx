@@ -103,6 +103,43 @@ const UsersProvider = ({ children }) => {
     }
   };
 
+  const editUser = async (userE) => {
+    const { uid, confirmPass, password, ...body } = userE;
+    if (password !== '') {
+      body.password = password;
+    }
+    const [y, m, d] = body.dob.split('-');
+    body.dob = `${d}/${m}/${y}`;
+
+    try {
+      const config = {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      };
+
+      const { data } = await axiosClient.put(
+        `/users/${uid}`,
+        JSON.stringify(body),
+        config
+      );
+
+      setUsers(
+        users.filter((user) => {
+          if (user.uid === uid) {
+            return data;
+          }
+          return user;
+        })
+      );
+
+      setUser(data);
+      return data;
+    } catch (error) {
+      return error.response.data;
+    }
+  };
+
   const submitUser = async (user) => {
     const { confirmPass, ...body } = user;
     const [y, m, d] = body.dob.split('-');
@@ -140,6 +177,7 @@ const UsersProvider = ({ children }) => {
         deleteUser,
         showAlert,
         unblockUser,
+        editUser,
       }}
     >
       {children}

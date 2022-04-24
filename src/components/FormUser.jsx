@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import React from 'react';
 
@@ -6,19 +6,21 @@ import { ToastContainer } from 'react-toastify';
 
 import { useForm } from '../hooks/useForm';
 import useUsers from '../hooks/useUsers';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const FormUser = () => {
   const [policy, setPolicy] = useState(false);
 
-  const radioRoleRef = useRef(null);
-  const radioChildRef = useRef(null);
+  const radioUserRef = useRef(null);
+  const radioChildNoRef = useRef(null);
+  const radioChildYesRef = useRef(null);
 
-  const { submitUser, showAlert } = useUsers();
+  const { submitUser, showAlert, user, editUser } = useUsers();
 
   const navigate = useNavigate();
+  const params = useParams();
 
-  const [formValues, handleInputChange, reset] = useForm({
+  const [formValues, handleInputChange, reset, handleEdit] = useForm({
     role: 'USER_ROLE',
     name: '',
     email: '',
@@ -48,25 +50,52 @@ const FormUser = () => {
     phone,
   } = formValues;
 
+  useEffect(() => {
+    if (params.id && user.uid) {
+      const [d, m, y] = user.dob.split('/');
+      handleEdit({
+        role: user.role,
+        name: user.name,
+        email: user.email,
+        password: '',
+        confirmPass: '',
+        no_household: user.no_household,
+        postcode: user.postcode,
+        housing_provider: user.housing_provider,
+        phone: user.phone,
+
+        dob: `${y}-${m}-${d}`,
+
+        child: user.child,
+        child_cant: user.child_cant,
+      });
+      if (user.child) {
+        radioChildYesRef.current.checked = true;
+      }
+    }
+  }, [params]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (role.includes('ADMIN') && [email, password, confirmPass].includes('')) {
       if (child) {
-        radioChildRef.current.checked = true;
+        radioChildNoRef.current.checked = true;
       }
       showAlert('Required fields are empty');
       return;
     }
 
-    if (role.includes('ADMIN') && password.length < 6) {
-      showAlert('The password must be at least 6 characters');
-      return;
-    }
+    if (!params.id || password !== '') {
+      if (role.includes('ADMIN') && password.length < 6) {
+        showAlert('The password must be at least 6 characters');
+        return;
+      }
 
-    if (password !== confirmPass) {
-      showAlert(`The passwords don't match`);
-      return;
+      if (password !== confirmPass) {
+        showAlert(`The passwords don't match`);
+        return;
+      }
     }
 
     if ([name, dob, postcode, phone].includes('')) {
@@ -87,12 +116,21 @@ const FormUser = () => {
       return;
     }
 
-    if (role.includes('USER') && !policy) {
+    if (role.includes('USER') && !policy && !params) {
       showAlert('It is necessary to accept the terms');
       return;
     }
 
-    const resp = await submitUser(formValues);
+    let resp;
+
+    if (params.id) {
+      resp = await editUser({
+        ...formValues,
+        uid: params.id,
+      });
+    } else {
+      resp = await submitUser(formValues);
+    }
 
     if (resp.errors) {
       resp.errors.forEach((e) => {
@@ -102,15 +140,25 @@ const FormUser = () => {
     }
 
     if (role.includes('ADMIN') && resp.uid) {
-      showAlert('New admin created', false);
+      showAlert(
+        params.id ? `User ${resp.email} edited` : 'New admin created',
+        false
+      );
     } else {
-      showAlert(`User ID ${resp.customer_id} assigned`, false);
+      showAlert(
+        params.id
+          ? `User with ID ${resp.customer_id} edited`
+          : `User ID ${resp.customer_id} assigned`,
+        false
+      );
     }
 
-    radioRoleRef.current.checked = true;
+    if (!params.id) {
+      radioUserRef.current.checked = true;
+    }
 
     if (child) {
-      radioChildRef.current.checked = true;
+      radioChildNoRef.current.checked = true;
     }
     setPolicy(false);
     reset();
@@ -125,50 +173,54 @@ const FormUser = () => {
       onSubmit={handleSubmit}
     >
       <ToastContainer />
-      <label
-        className="text-gray-700 uppercase font-bold text-sm text-center block"
-        htmlFor="role"
-      >
-        User Type
-      </label>
-      <div className="flex justify-evenly">
-        <div>
-          <input
-            type="radio"
-            id="user"
-            name="role"
-            ref={radioRoleRef}
-            value="USER_ROLE"
-            defaultChecked={true}
-            onClick={handleInputChange}
-            className="checked:accent-green-600"
-          />
+      {!params.id && (
+        <>
           <label
-            htmlFor="user"
-            className="text-gray-700 uppercase font-bold text-sm"
+            className="text-gray-700 uppercase font-bold text-sm text-center block"
+            htmlFor="role"
           >
-            {' '}
-            CUSTOMER
+            User Type
           </label>
-        </div>
-        <div>
-          <input
-            type="radio"
-            id="admin"
-            name="role"
-            value="ADMIN_ROLE"
-            onClick={handleInputChange}
-            className="checked:accent-green-600"
-          />
-          <label
-            htmlFor="admin"
-            className="text-gray-700 uppercase font-bold text-sm"
-          >
-            {' '}
-            ADMIN
-          </label>
-        </div>
-      </div>
+          <div className="flex justify-evenly">
+            <div>
+              <input
+                type="radio"
+                id="user"
+                name="role"
+                ref={radioUserRef}
+                value="USER_ROLE"
+                defaultChecked={true}
+                onClick={handleInputChange}
+                className="checked:accent-green-600"
+              />
+              <label
+                htmlFor="user"
+                className="text-gray-700 uppercase font-bold text-sm"
+              >
+                {' '}
+                CUSTOMER
+              </label>
+            </div>
+            <div>
+              <input
+                type="radio"
+                id="admin"
+                name="role"
+                value="ADMIN_ROLE"
+                onClick={handleInputChange}
+                className="checked:accent-green-600"
+              />
+              <label
+                htmlFor="admin"
+                className="text-gray-700 uppercase font-bold text-sm"
+              >
+                {' '}
+                ADMIN
+              </label>
+            </div>
+          </div>
+        </>
+      )}
       <div>
         <label
           className="text-gray-700 uppercase font-bold text-sm"
@@ -274,7 +326,7 @@ const FormUser = () => {
                 id="no"
                 name="child"
                 value={false}
-                ref={radioChildRef}
+                ref={radioChildNoRef}
                 defaultChecked={true}
                 onClick={(e) => handleInputChange(e, 'Boolean')}
                 className="checked:accent-green-600"
@@ -292,6 +344,7 @@ const FormUser = () => {
                 type="radio"
                 id="yes"
                 name="child"
+                ref={radioChildYesRef}
                 value={true}
                 onClick={(e) => handleInputChange(e, 'Boolean')}
                 className="checked:accent-green-600"
@@ -396,7 +449,7 @@ const FormUser = () => {
           onChange={handleInputChange}
         />
       </div>
-      {role.includes('USER') && (
+      {role.includes('USER') && !params.id && (
         <div>
           <input
             id="policy"
@@ -418,7 +471,7 @@ const FormUser = () => {
       )}
       <input
         type="submit"
-        value="Create User"
+        value={params.id ? 'Save' : 'Create User'}
         className="bg-green-600 w-full mt-3 p-3 uppercase font-bold text-white rounded cursor-pointer hover:bg-green-700 transition-colors"
       />
     </form>

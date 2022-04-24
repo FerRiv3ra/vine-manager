@@ -6,6 +6,24 @@ const EventsContext = createContext();
 const EventsProvider = ({ children }) => {
   const [events, setEvents] = useState([]);
 
+  useEffect(() => {
+    const getEvents = async () => {
+      try {
+        const config = {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        };
+        const { data } = await axiosClient('/events', config);
+        setEvents(data.events);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    getEvents();
+  }, []);
+
   return (
     <EventsContext.Provider value={{ events }}>
       {children}

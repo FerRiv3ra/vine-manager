@@ -91,7 +91,7 @@ const UserProfile = () => {
           </p>
         )}
         {user.email && !user.email.includes('@default') && (
-          <p className="text-lg w-2/3">
+          <p className="text-lg w-3/4">
             <span className="font-black">Email:</span> {user.email}
           </p>
         )}
@@ -123,8 +123,8 @@ const UserProfile = () => {
       </div>
       <p
         className={`text-lg w-auto text-center ${
-          user.role === 'USER_ROLE' ? 'mt-6' : 'mt-10'
-        } font-semibold uppercase`}
+          user.role === 'USER_ROLE' ? 'mt-6' : ' mt-16'
+        } font-semibold uppercase w-full`}
       >
         Actions
       </p>
