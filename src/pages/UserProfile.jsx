@@ -16,8 +16,6 @@ const UserProfile = () => {
 
   const navigate = useNavigate();
 
-  // TODO: Unblock and edit are pending
-
   const handleDelete = async () => {
     const resp = confirm('Are you sure you want to delete this user?');
 
@@ -36,6 +34,18 @@ const UserProfile = () => {
       });
       return;
     }
+
+    showAlert(
+      `User ${
+        user.role === 'USER_ROLE' ? user.customer_id : user.email
+      } deleted`,
+      false,
+      3000
+    );
+
+    setTimeout(() => {
+      navigate('/users');
+    }, 3500);
   };
 
   const handleUnblock = async () => {

@@ -1,13 +1,39 @@
 import { Link } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
 import Logo from '../assets/culture_cafe.png';
+import useEvents from '../hooks/useEvents';
 
 const Event = ({ event }) => {
   const { date } = event;
   const [y, m, d] = date.slice(0, 10).split('-');
-  const showDate = new Date(y, m, d);
-  console.log(showDate.toUTCString().slice(0, 16));
+  const showDate = new Date(y, m - 1, d);
+
+  const { deleteEvent, showAlert } = useEvents();
+
+  const handleDelete = async (e) => {
+    const resp = confirm('Are you sure you want to delete this event?');
+    if (!resp) return;
+
+    const data = await deleteEvent(event._id);
+
+    if (data.msg) {
+      showAlert(data.msg, true, 5000);
+      return;
+    }
+
+    if (data.errors) {
+      data.errors.forEach((e) => {
+        showAlert(e.msg);
+      });
+      return;
+    }
+
+    showAlert(`Event ${data.title} deleted`, false, 3000);
+  };
+
   return (
     <div className="border-b p-4 w-full flex justify-between">
+      <ToastContainer />
       <div className="flex-1 items-center">
         <img
           className="w-14 mr-3 float-left"
@@ -64,7 +90,7 @@ const Event = ({ event }) => {
           <button
             type="button"
             className="uppercase font-bold text-sm"
-            // onClick={handleDelete}
+            onClick={handleDelete}
           >
             Delete
           </button>

@@ -12,6 +12,7 @@ import { EventsProvider } from './context/EventsProvider';
 import { UsersProvider } from './context/UsersProvider';
 import UserProfile from './pages/UserProfile';
 import EditUser from './pages/EditUser';
+import EditEvent from './pages/EditEvent';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
               <Route path="/events" element={<ProtectedRoutes />}>
                 <Route index element={<Events />} />
                 <Route path="new-event" element={<NewEvent />} />
+                <Route path="edit/:id" element={<EditEvent />} />
               </Route>
               <Route path="/users" element={<ProtectedRoutes />}>
                 <Route index element={<Users />} />
