@@ -49,7 +49,7 @@ const EventsProvider = ({ children }) => {
     const { data: img, imgName, date, ...body } = event;
     const y = new Date(date).getFullYear();
     const m = new Date(date).getMonth() + 1;
-    const d = new Date(date).getDate() + 1;
+    const d = new Date(date).getDate();
 
     body.date = `${y}-${m < 10 ? `0${m}` : m}-${
       d < 10 ? `0${d}` : d
@@ -91,7 +91,7 @@ const EventsProvider = ({ children }) => {
     if (date !== '') {
       const y = new Date(date).getFullYear();
       const m = new Date(date).getMonth() + 1;
-      const d = new Date(date).getDate() + 1;
+      const d = new Date(date).getDate();
 
       body.date = `${y}-${m < 10 ? `0${m}` : m}-${
         d < 10 ? `0${d}` : d
