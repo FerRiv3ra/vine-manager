@@ -5,8 +5,7 @@ import useEvents from '../hooks/useEvents';
 
 const Event = ({ event }) => {
   const { date } = event;
-  const [y, m, d] = date.slice(0, 10).split('-');
-  const showDate = new Date(y, m - 1, d);
+  const showDate = new Date(`${date}`);
 
   const { deleteEvent, showAlert } = useEvents();
 

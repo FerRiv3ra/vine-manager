@@ -2,6 +2,7 @@ import { createContext, useEffect, useState } from 'react';
 import axiosClient from '../config/axiosClient';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { data } from 'autoprefixer';
 
 const EventsContext = createContext();
 
@@ -86,6 +87,12 @@ const EventsProvider = ({ children }) => {
     }
   };
 
+  const updateImg = async (id) => {
+    const { data } = await axiosClient.put(`/upload/events/${id}`, img);
+
+    return data.img;
+  };
+
   const editEvent = async (eventE) => {
     const { data: img, imgName, date, id, ...body } = eventE;
     if (date !== '') {
@@ -106,35 +113,24 @@ const EventsProvider = ({ children }) => {
         },
       };
 
-      const { data: putEvent } = await axiosClient.put(
-        `/events/${id}`,
-        body,
-        config
-      );
+      const { data } = await axiosClient.put(`/events/${id}`, body, config);
 
       if (imgName !== '') {
-        const { data } = await axiosClient.put(`/upload/events/${id}`, img);
+        const urlImg = await updateImg(id);
 
-        setEvents(
-          events.filter((event) => {
-            if (event._id === id) {
-              return data;
-            }
-            return event;
-          })
-        );
-        return data;
+        data.img = urlImg;
       }
 
       setEvents(
-        events.filter((event) => {
-          if (event._id === id) {
-            return putEvent;
+        events.map((ev) => {
+          if (ev._id === data._id) {
+            return data;
+          } else {
+            return ev;
           }
-          return event;
         })
       );
-      return putEvent;
+      return data;
     } catch (error) {
       return error.response.data;
     }
