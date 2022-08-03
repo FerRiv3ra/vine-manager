@@ -9,6 +9,7 @@ const UsersContext = createContext();
 const UsersProvider = ({ children }) => {
   const [users, setUsers] = useState([]);
   const [user, setUser] = useState({});
+  const [search, setSearch] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -166,6 +167,29 @@ const UsersProvider = ({ children }) => {
     }
   };
 
+  const addVisit = async (dataVisit) => {
+    const token = localStorage.getItem('x-token');
+
+    try {
+      const config = {
+        headers: {
+          'Content-Type': 'application/json',
+          'x-token': token,
+        },
+      };
+
+      const { data } = await axiosClient.post(
+        `/deliveries`,
+        JSON.stringify(dataVisit),
+        config
+      );
+
+      return data;
+    } catch (error) {
+      return error.response.data;
+    }
+  };
+
   return (
     <UsersContext.Provider
       value={{
@@ -178,6 +202,9 @@ const UsersProvider = ({ children }) => {
         showAlert,
         unblockUser,
         editUser,
+        search,
+        setSearch,
+        addVisit,
       }}
     >
       {children}

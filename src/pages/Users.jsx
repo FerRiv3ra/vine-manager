@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
+import { ToastContainer } from 'react-toastify';
 import User from '../components/User';
 import useUsers from '../hooks/useUsers';
 
 const Users = () => {
   const [usersList, setusersList] = useState([]);
-  const { users } = useUsers();
+  const { users, search, setSearch } = useUsers();
+  const regex = /[0-9]/g;
 
   useEffect(() => {
+    setSearch('');
     setusersList(users.filter((user) => user.role === 'USER_ROLE'));
   }, []);
 
@@ -21,8 +24,20 @@ const Users = () => {
     setusersList(list);
   };
 
+  let usersArr = [];
+  if (regex.test(search)) {
+    usersArr = usersList.filter((us) =>
+      us.customer_id.toString().includes(search)
+    );
+  } else {
+    usersArr = usersList.filter((us) =>
+      us.name.toUpperCase().includes(search.toUpperCase())
+    );
+  }
+
   return (
     <>
+      <ToastContainer />
       <h1 className="text-4xl font-black">Users</h1>
       <h3 className="text-2xl font-bold text-center">View</h3>
 
@@ -67,8 +82,8 @@ const Users = () => {
       </form>
 
       <div className="bg-white shadow mt-10 rounded-lg">
-        {usersList.length ? (
-          usersList.map((user) => <User key={user.uid} user={user} />)
+        {usersArr.length ? (
+          usersArr.map((user) => <User key={user.uid} user={user} />)
         ) : (
           <p className="text-center text-gray-600 uppercase p-5">
             Nothing to show

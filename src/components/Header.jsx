@@ -1,8 +1,13 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Logo from '../assets/lvc.png';
+import useUsers from '../hooks/useUsers';
 
 const Header = () => {
   const navigate = useNavigate();
+
+  const { search, setSearch } = useUsers();
+
+  const { pathname } = useLocation();
 
   const handleLogout = (e) => {
     e.preventDefault();
@@ -20,6 +25,15 @@ const Header = () => {
             Manager
           </h2>
         </div>
+        {pathname.includes('/users') && (
+          <input
+            type="search"
+            placeholder="Search"
+            className="rounded-lg lg:w-96 block p-2 border"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        )}
         <div className="flex items-center gap-4">
           <Link to="/events" className="font-bold uppercase">
             Events
