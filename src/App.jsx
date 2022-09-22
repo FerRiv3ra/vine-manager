@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-
+import 'react-toastify/dist/ReactToastify.css';
 import AuthLayout from './layouts/AuthLayout';
 import ProtectedRoutes from './layouts/ProtectedRoutes';
 import Login from './pages/Login';
@@ -13,6 +13,7 @@ import { UsersProvider } from './context/UsersProvider';
 import UserProfile from './pages/UserProfile';
 import EditUser from './pages/EditUser';
 import EditEvent from './pages/EditEvent';
+import VerifyLogin from './pages/VerifyLogin';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
             <Routes>
               <Route path="/" element={<AuthLayout />}>
                 <Route index element={<Login />} />
+                <Route path="verify/:token" element={<VerifyLogin />} />
               </Route>
               <Route path="/events" element={<ProtectedRoutes />}>
                 <Route index element={<Events />} />

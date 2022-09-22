@@ -2,7 +2,6 @@ import { createContext, useEffect, useState } from 'react';
 import axiosClient from '../config/axiosClient';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { data } from 'autoprefixer';
 
 const EventsContext = createContext();
 
