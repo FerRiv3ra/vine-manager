@@ -38,18 +38,8 @@ const AuthProvider = ({ children }) => {
     getUser();
   }, []);
 
-  const showAlert = (msg = '', error = true, autoClose = 5000) => {
-    if (error) {
-      toast.error(msg);
-    } else {
-      toast.success(msg, {
-        autoClose,
-      });
-    }
-  };
-
   return (
-    <AuthContext.Provider value={{ auth, setAuth, isLoading, showAlert }}>
+    <AuthContext.Provider value={{ auth, setAuth, isLoading }}>
       {children}
     </AuthContext.Provider>
   );

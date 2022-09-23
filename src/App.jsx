@@ -14,6 +14,10 @@ import UserProfile from './pages/UserProfile';
 import EditUser from './pages/EditUser';
 import EditEvent from './pages/EditEvent';
 import VerifyLogin from './pages/VerifyLogin';
+import SignUp from './pages/SignUp';
+import ForgotPassword from './pages/ForgotPassword';
+import NewPassword from './pages/NewPassword';
+import VerifyToken from './pages/VerifyToken';
 
 function App() {
   return (
@@ -24,6 +28,17 @@ function App() {
             <Routes>
               <Route path="/" element={<AuthLayout />}>
                 <Route index element={<Login />} />
+                <Route path="signup" element={<SignUp />} />
+                <Route
+                  exact
+                  path="forgot-password"
+                  element={<ForgotPassword />}
+                />
+                <Route
+                  path="forgot-password/:token"
+                  element={<VerifyToken />}
+                />
+                <Route path="new-password/:token" element={<NewPassword />} />
                 <Route path="verify/:token" element={<VerifyLogin />} />
               </Route>
               <Route path="/events" element={<ProtectedRoutes />}>
