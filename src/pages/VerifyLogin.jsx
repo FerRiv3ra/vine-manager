@@ -19,7 +19,7 @@ const VerifyLogin = () => {
 
         localStorage.setItem('x-token', data.token);
         setAuth(data.user);
-        navigate('/events');
+        navigate('/dashboard');
       } catch (error) {
         toast.error(error.response.data.msg);
       }
