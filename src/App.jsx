@@ -18,6 +18,7 @@ import SignUp from './pages/SignUp';
 import ForgotPassword from './pages/ForgotPassword';
 import NewPassword from './pages/NewPassword';
 import VerifyToken from './pages/VerifyToken';
+import Dashboard from './pages/Dashboard';
 
 function App() {
   return (
@@ -41,16 +42,15 @@ function App() {
                 <Route path="new-password/:token" element={<NewPassword />} />
                 <Route path="verify/:token" element={<VerifyLogin />} />
               </Route>
-              <Route path="/events" element={<ProtectedRoutes />}>
-                <Route index element={<Events />} />
+              <Route path="/dashboard" element={<ProtectedRoutes />}>
+                <Route index element={<Dashboard />} />
+                <Route path="events" element={<Events />} />
                 <Route path="new-event" element={<NewEvent />} />
                 <Route path="edit/:id" element={<EditEvent />} />
-              </Route>
-              <Route path="/users" element={<ProtectedRoutes />}>
-                <Route index element={<Users />} />
-                <Route path="new-user" element={<NewUser />} />
-                <Route path=":id" element={<UserProfile />} />
-                <Route path="edit/:id" element={<EditUser />} />
+                <Route path="users" element={<Users />} />
+                <Route path="users/new-user" element={<NewUser />} />
+                <Route path="users/:id" element={<UserProfile />} />
+                <Route path="users/edit/:id" element={<EditUser />} />
               </Route>
             </Routes>
           </UsersProvider>

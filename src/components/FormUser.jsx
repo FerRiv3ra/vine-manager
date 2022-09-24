@@ -11,7 +11,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 const FormUser = () => {
   const [policy, setPolicy] = useState(false);
 
-  const radioUserRef = useRef(null);
+  const radioPensionerYesRef = useRef(null);
+  const radioPensionerNoRef = useRef(null);
   const radioChildNoRef = useRef(null);
   const radioChildYesRef = useRef(null);
 
@@ -21,102 +22,86 @@ const FormUser = () => {
   const params = useParams();
 
   const [formValues, handleInputChange, reset, handleEdit] = useForm({
-    role: 'USER_ROLE',
-    name: '',
-    email: '',
-    password: '',
-    confirmPass: '',
-    no_household: 1,
+    address: '',
+    firstName: '',
+    lastName: '',
+    noHousehold: '',
     child: false,
-    child_cant: 0,
+    childCant: '',
     dob: '',
+    pensioner: false,
     postcode: '',
-    housing_provider: '',
+    housingProvider: '',
     phone: '',
+    town: '',
   });
 
   const {
-    role,
-    name,
-    email,
-    password,
-    confirmPass,
-    no_household,
+    address,
+    firstName,
+    lastName,
+    noHousehold,
     child,
-    child_cant,
+    childCant,
     dob,
     postcode,
-    housing_provider,
+    housingProvider,
     phone,
+    pensioner,
+    town,
   } = formValues;
 
   useEffect(() => {
     if (params.id && user.uid) {
-      const [d, m, y] = user.dob.split('/');
+      const [d, m, y] = user.dob.slice(0, 10).split('/');
       handleEdit({
-        role: user.role,
-        name: user.name,
-        email: user.email,
-        password: '',
-        confirmPass: '',
-        no_household: user.no_household,
+        address: user.address,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        noHousehold: user.noHousehold,
         postcode: user.postcode,
-        housing_provider: user.housing_provider,
+        housingProvider: user.housingProvider,
         phone: user.phone,
+        town: user.town,
 
         dob: `${y}-${m}-${d}`,
 
         child: user.child,
-        child_cant: user.child_cant,
+        childCant: user.childCant,
       });
       if (user.child) {
         radioChildYesRef.current.checked = true;
       }
+
+      if (user.pensioner) {
+        radioPensionerYesRef.current.checked = true;
+      }
+
+      setPolicy(true);
     }
   }, [params]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (role.includes('ADMIN') && [email, password, confirmPass].includes('')) {
-      if (child) {
-        radioChildNoRef.current.checked = true;
-      }
-      showAlert('Required fields are empty');
-      return;
-    }
-
-    if (!params.id || password !== '') {
-      if (role.includes('ADMIN') && password.length < 6) {
-        showAlert('The password must be at least 6 characters');
-        return;
-      }
-
-      if (password !== confirmPass) {
-        showAlert(`The passwords don't match`);
-        return;
-      }
-    }
-
-    if ([name, dob, postcode, phone].includes('')) {
-      showAlert('Required fields are empty');
-      return;
-    }
-
     if (
-      role.includes('USER') &&
-      [no_household, housing_provider].includes('')
+      [address, firstName, lastName, dob, postcode, phone, town].includes('')
     ) {
-      showAlert('Required fields are empty');
+      showAlert('All fields are required');
       return;
     }
 
-    if (child && child_cant === 0) {
+    if (noHousehold < 1) {
+      showAlert('Number in household no valid');
+      return;
+    }
+
+    if (child && childCant === 0) {
       showAlert('Number of children is required');
       return;
     }
 
-    if (role.includes('USER') && !policy && !params) {
+    if (!policy) {
       showAlert('It is necessary to accept the terms');
       return;
     }
@@ -139,32 +124,25 @@ const FormUser = () => {
       return;
     }
 
-    if (role.includes('ADMIN') && resp.uid) {
-      showAlert(
-        params.id ? `User ${resp.email} edited` : 'New admin created',
-        false
-      );
-    } else {
-      showAlert(
-        params.id
-          ? `User with ID ${resp.customer_id} edited`
-          : `User ID ${resp.customer_id} assigned`,
-        false
-      );
-    }
-
-    if (!params.id) {
-      radioUserRef.current.checked = true;
-    }
+    showAlert(
+      params.id
+        ? `User with ID ${resp.customerId} edited`
+        : `User ID ${resp.customerId} assigned`,
+      false,
+      3500
+    );
 
     if (child) {
       radioChildNoRef.current.checked = true;
     }
+    if (pensioner) {
+      radioPensionerNoRef.current.checked = true;
+    }
     setPolicy(false);
     reset();
     setTimeout(() => {
-      navigate('/users');
-    }, 6000);
+      navigate('/dashboard/users');
+    }, 3500);
   };
 
   return (
@@ -173,213 +151,126 @@ const FormUser = () => {
       onSubmit={handleSubmit}
     >
       <ToastContainer />
-      {!params.id && (
-        <>
-          <label
-            className="text-gray-700 uppercase font-bold text-sm text-center block"
-            htmlFor="role"
-          >
-            User Type
-          </label>
-          <div className="flex justify-evenly">
-            <div>
-              <input
-                type="radio"
-                id="user"
-                name="role"
-                ref={radioUserRef}
-                value="USER_ROLE"
-                defaultChecked={true}
-                onClick={handleInputChange}
-                className="checked:accent-green-600"
-              />
-              <label
-                htmlFor="user"
-                className="text-gray-700 uppercase font-bold text-sm"
-              >
-                {' '}
-                CUSTOMER
-              </label>
-            </div>
-            <div>
-              <input
-                type="radio"
-                id="admin"
-                name="role"
-                value="ADMIN_ROLE"
-                onClick={handleInputChange}
-                className="checked:accent-green-600"
-              />
-              <label
-                htmlFor="admin"
-                className="text-gray-700 uppercase font-bold text-sm"
-              >
-                {' '}
-                ADMIN
-              </label>
-            </div>
-          </div>
-        </>
-      )}
+
       <div>
         <label
           className="text-gray-700 uppercase font-bold text-sm"
           htmlFor="name"
         >
-          Name *
+          First Name *
         </label>
         <input
           id="name"
           type="text"
-          name="name"
+          name="firstName"
           className="border w-full p-2 mt-2 placeholder-gray-400 rounded-md capitalize"
-          placeholder="Name"
-          value={name}
+          placeholder="First name"
+          value={firstName}
           onChange={handleInputChange}
         />
       </div>
       <div>
         <label
           className="text-gray-700 uppercase font-bold text-sm"
-          htmlFor="email"
+          htmlFor="name"
         >
-          Email {role.includes('ADMIN') && '*'}
+          Last Name *
         </label>
         <input
-          id="email"
-          type="email"
-          name="email"
-          className="border w-full p-2 mt-2 placeholder-gray-400 rounded-md"
-          placeholder="Email"
-          value={email}
+          id="name"
+          type="text"
+          name="lastName"
+          className="border w-full p-2 mt-2 placeholder-gray-400 rounded-md capitalize"
+          placeholder="Last name"
+          value={lastName}
           onChange={handleInputChange}
         />
       </div>
-      {role.includes('ADMIN') && (
+      <div>
         <div>
+          <label
+            className="text-gray-700 uppercase font-bold text-sm"
+            htmlFor="no-household"
+          >
+            Number in household *
+          </label>
+          <input
+            id="no-household"
+            type="number"
+            name="noHousehold"
+            className="border w-full p-2 mt-2 placeholder-gray-400 rounded-md"
+            placeholder="Number in household"
+            value={noHousehold}
+            onChange={(e) => handleInputChange(e, 'Number')}
+          />
+        </div>
+        <label
+          className="text-gray-700 uppercase font-bold text-sm text-center block"
+          htmlFor="child"
+        >
+          Children in household
+        </label>
+        <div className="flex justify-evenly">
           <div>
-            <label
-              className="text-gray-700 uppercase font-bold text-sm"
-              htmlFor="password"
-            >
-              Password *
-            </label>
             <input
-              id="password"
-              type="password"
-              name="password"
-              className="border w-full p-2 mt-2 placeholder-gray-400 rounded-md"
-              placeholder="Password"
-              value={password}
-              onChange={handleInputChange}
+              type="radio"
+              id="no"
+              name="child"
+              value={false}
+              ref={radioChildNoRef}
+              defaultChecked={true}
+              onClick={(e) => handleInputChange(e, 'Boolean')}
+              className="checked:accent-green-600"
             />
+            <label
+              htmlFor="no"
+              className="text-gray-700 uppercase font-bold text-sm"
+            >
+              {' '}
+              NO
+            </label>
           </div>
           <div>
-            <label
-              className="text-gray-700 uppercase font-bold text-sm"
-              htmlFor="confirm-password"
-            >
-              Confirm Password *
-            </label>
             <input
-              id="confirm-password"
-              type="password"
-              name="confirmPass"
-              className="border w-full p-2 mt-2 placeholder-gray-400 rounded-md"
-              placeholder="Confirm Password"
-              value={confirmPass}
-              onChange={handleInputChange}
+              type="radio"
+              id="yes"
+              name="child"
+              ref={radioChildYesRef}
+              value={true}
+              onClick={(e) => handleInputChange(e, 'Boolean')}
+              className="checked:accent-green-600"
             />
+            <label
+              htmlFor="yes"
+              className="text-gray-700 uppercase font-bold text-sm"
+            >
+              {' '}
+              YES
+            </label>
           </div>
         </div>
-      )}
-      {role.includes('USER') && (
-        <div>
+        {child && (
           <div>
             <label
               className="text-gray-700 uppercase font-bold text-sm"
-              htmlFor="no-household"
+              htmlFor="child-cant"
             >
-              Number in household *
+              How many children? *
             </label>
             <input
-              id="no-household"
+              id="child-cant"
               type="number"
-              min="1"
-              name="no_household"
+              min="0"
+              name="childCant"
               className="border w-full p-2 mt-2 placeholder-gray-400 rounded-md"
-              placeholder="Number in household"
-              value={no_household}
+              placeholder="How many children?"
+              value={childCant}
               onChange={(e) => handleInputChange(e, 'Number')}
             />
           </div>
-          <label
-            className="text-gray-700 uppercase font-bold text-sm text-center block"
-            htmlFor="child"
-          >
-            Children in household
-          </label>
-          <div className="flex justify-evenly">
-            <div>
-              <input
-                type="radio"
-                id="no"
-                name="child"
-                value={false}
-                ref={radioChildNoRef}
-                defaultChecked={true}
-                onClick={(e) => handleInputChange(e, 'Boolean')}
-                className="checked:accent-green-600"
-              />
-              <label
-                htmlFor="no"
-                className="text-gray-700 uppercase font-bold text-sm"
-              >
-                {' '}
-                NO
-              </label>
-            </div>
-            <div>
-              <input
-                type="radio"
-                id="yes"
-                name="child"
-                ref={radioChildYesRef}
-                value={true}
-                onClick={(e) => handleInputChange(e, 'Boolean')}
-                className="checked:accent-green-600"
-              />
-              <label
-                htmlFor="yes"
-                className="text-gray-700 uppercase font-bold text-sm"
-              >
-                {' '}
-                YES
-              </label>
-            </div>
-          </div>
-          {child && (
-            <div>
-              <label
-                className="text-gray-700 uppercase font-bold text-sm"
-                htmlFor="child-cant"
-              >
-                How many children? *
-              </label>
-              <input
-                id="child-cant"
-                type="number"
-                min="0"
-                name="child_cant"
-                className="border w-full p-2 mt-2 placeholder-gray-400 rounded-md"
-                placeholder="How many children?"
-                value={child_cant}
-                onChange={(e) => handleInputChange(e, 'Number')}
-              />
-            </div>
-          )}
-        </div>
-      )}
+        )}
+      </div>
+
       <div>
         <label
           className="text-gray-700 uppercase font-bold text-sm"
@@ -393,6 +284,23 @@ const FormUser = () => {
           name="dob"
           className="border w-full p-2 mt-2 placeholder-gray-400 rounded-md"
           value={dob}
+          onChange={handleInputChange}
+        />
+      </div>
+      <div>
+        <label
+          className="text-gray-700 uppercase font-bold text-sm"
+          htmlFor="address"
+        >
+          Address *
+        </label>
+        <input
+          id="address"
+          type="text"
+          name="address"
+          className="border w-full p-2 mt-2 placeholder-gray-400 rounded-md uppercase"
+          placeholder="Address"
+          value={address}
           onChange={handleInputChange}
         />
       </div>
@@ -413,25 +321,41 @@ const FormUser = () => {
           onChange={handleInputChange}
         />
       </div>
-      {role.includes('USER') && (
-        <div>
-          <label
-            className="text-gray-700 uppercase font-bold text-sm"
-            htmlFor="housing-provider"
-          >
-            Housing provider *
-          </label>
-          <input
-            id="housing-provider"
-            type="text"
-            name="housing_provider"
-            className="border w-full p-2 mt-2 placeholder-gray-400 rounded-md"
-            placeholder="Housing provider"
-            value={housing_provider}
-            onChange={handleInputChange}
-          />
-        </div>
-      )}
+      <div>
+        <label
+          className="text-gray-700 uppercase font-bold text-sm"
+          htmlFor="town"
+        >
+          Town *
+        </label>
+        <input
+          id="town"
+          type="text"
+          name="town"
+          className="border w-full p-2 mt-2 placeholder-gray-400 rounded-md uppercase"
+          placeholder="Town"
+          value={town}
+          onChange={handleInputChange}
+        />
+      </div>
+      <div>
+        <label
+          className="text-gray-700 uppercase font-bold text-sm"
+          htmlFor="housing-provider"
+        >
+          Housing provider *
+        </label>
+        <input
+          id="housing-provider"
+          type="text"
+          name="housingProvider"
+          className="border w-full p-2 mt-2 placeholder-gray-400 rounded-md"
+          placeholder="Housing provider"
+          value={housingProvider}
+          onChange={handleInputChange}
+        />
+      </div>
+
       <div>
         <label
           className="text-gray-700 uppercase font-bold text-sm"
@@ -449,26 +373,72 @@ const FormUser = () => {
           onChange={handleInputChange}
         />
       </div>
-      {role.includes('USER') && !params.id && (
+
+      <label
+        className="text-gray-700 uppercase font-bold text-sm text-center block"
+        htmlFor="pensioner"
+      >
+        Pensioner
+      </label>
+      <div className="flex justify-evenly">
         <div>
           <input
-            id="policy"
-            type="checkbox"
-            name="policy"
-            className="border p-2 mt-2 placeholder-gray-400 rounded-md"
-            value={policy}
-            checked={policy}
-            onChange={(e) => setPolicy(!policy)}
+            type="radio"
+            id="no"
+            name="pensioner"
+            value={false}
+            ref={radioPensionerNoRef}
+            defaultChecked={true}
+            onClick={(e) => handleInputChange(e, 'Boolean')}
+            className="checked:accent-green-600"
           />
           <label
-            className="text-gray-700 uppercase font-bold text-xs"
-            htmlFor="policy"
+            htmlFor="no"
+            className="text-gray-700 uppercase font-bold text-sm"
           >
             {' '}
-            I agree to The Vine Centre storing my personal data
+            NO
           </label>
         </div>
-      )}
+        <div>
+          <input
+            type="radio"
+            id="yes"
+            name="pensioner"
+            ref={radioPensionerYesRef}
+            value={true}
+            onClick={(e) => handleInputChange(e, 'Boolean')}
+            className="checked:accent-green-600"
+          />
+          <label
+            htmlFor="yes"
+            className="text-gray-700 uppercase font-bold text-sm"
+          >
+            {' '}
+            YES
+          </label>
+        </div>
+      </div>
+
+      <div>
+        <input
+          id="policy"
+          type="checkbox"
+          name="policy"
+          className="border p-2 mt-2 placeholder-gray-400 rounded-md"
+          value={policy}
+          checked={policy}
+          onChange={(e) => setPolicy(!policy)}
+        />
+        <label
+          className="text-gray-700 uppercase font-bold text-xs"
+          htmlFor="policy"
+        >
+          {' '}
+          I agree to The Vine Centre storing my personal data
+        </label>
+      </div>
+
       <input
         type="submit"
         value={params.id ? 'Save' : 'Create User'}

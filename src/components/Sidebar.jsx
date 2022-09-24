@@ -10,7 +10,9 @@ const Sidebar = () => {
       <p className="text-xl font-bold">Hello {auth.name}</p>
 
       <Link
-        to={pathname.includes('/events') ? 'new-event' : 'new-user'}
+        to={
+          pathname.includes('/events') ? 'events/new-event' : 'users/new-user'
+        }
         className="bg-green-600 p-3 w-full text-white uppercase font-bold block mt-5 text-center rounded-lg"
       >
         {pathname.includes('/events') ? 'Create Event' : 'New User'}

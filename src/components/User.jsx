@@ -5,7 +5,7 @@ import useUsers from '../hooks/useUsers';
 
 const User = ({ user }) => {
   const [canVisit, setCanVisit] = useState(true);
-  const [d, m, y] = user.last.split('/');
+  const [d, m, y] = user.lastVisit.split('/');
 
   const { addVisit, showAlert } = useUsers();
 
@@ -20,18 +20,18 @@ const User = ({ user }) => {
   }, []);
 
   const handleClick = async () => {
+    const amount = prompt('Amount of donation given?');
     const dataVisit = {
-      customer_id: user.customer_id,
-      cant_toiletries: 0,
+      customerId: user.customerId,
+      amount: Number(amount) || 0,
       uid: user.uid,
     };
 
     const resp = await addVisit(dataVisit);
 
-    console.log(resp.msg);
-
     if (resp.msg) {
       showAlert(resp.msg, true, 5000);
+      setCanVisit(false);
       return;
     }
 
@@ -39,10 +39,11 @@ const User = ({ user }) => {
       resp.errors.forEach((e) => {
         showAlert(e.msg);
       });
+      setCanVisit(false);
       return;
     }
 
-    showAlert(`Visit for user ${resp.customer_id} added`, false, 3000);
+    showAlert(`Visit for user ${resp.visit.customerId} added`, false, 3000);
 
     setCanVisit(false);
   };
@@ -51,17 +52,12 @@ const User = ({ user }) => {
     <div className="border-b p-4 w-full columns-3">
       <div className="flex flex-col">
         <p className="flex-1">
-          <span className="font-bold">Name:</span> {user.name}
+          <span className="font-bold">Name:</span> {user.firstName}{' '}
+          {user.lastName}
         </p>
         <p className="flex-1">
-          <span className="font-bold">
-            {user.role === 'USER_ROLE' ? 'Phone number:' : 'Email:'}
-          </span>{' '}
-          {user.role === 'ADMIN_ROLE'
-            ? user.email
-            : user.phone
-            ? user.phone
-            : 'N/A'}
+          <span className="font-bold">Phone number:</span>{' '}
+          {user.phone ? user.phone : 'N/A'}
         </p>
       </div>
       <div>
@@ -94,11 +90,7 @@ const User = ({ user }) => {
         </div>
         <div className="flex mt-1 flex-col">
           <span className="bg-green-600 px-5 rounded-full text-white font-bold w-min self-end">
-            {user.role === 'ADMIN_ROLE'
-              ? 'ADMIN'
-              : user.blocked
-              ? 'Blocked'
-              : user.customer_id}
+            {user.blocked ? 'Blocked' : user.customerId.toString()}
           </span>
           <Link
             to={`${user.uid}`}

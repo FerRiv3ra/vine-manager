@@ -17,6 +17,7 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loginOk, setLoginOk] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [token, setToken] = useState('');
 
   const navigate = useNavigate();
@@ -48,12 +49,14 @@ const Login = () => {
           password,
         });
 
-        if (data.ok) {
-          setEmail('');
-          setPassword('');
-          toast.success(data.msg);
-          setLoginOk(true);
+        if (rememberMe) {
+          localStorage.setItem('rememberMe', 'true');
         }
+
+        setEmail('');
+        setPassword('');
+        toast.success(data.msg);
+        setLoginOk(true);
       } catch (error) {
         toast.error(error.response.data.msg);
       }
@@ -178,7 +181,21 @@ const Login = () => {
                           className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-md focus:border-green-400 focus:ring-green-400 focus:outline-none focus:ring focus:ring-opacity-40"
                         />
                       </div>
-                      <div className="mt-6">
+                      <div className="flex items-center mt-2">
+                        <input
+                          type="checkbox"
+                          value={rememberMe}
+                          checked={rememberMe}
+                          onChange={() => setRememberMe(!rememberMe)}
+                        />
+                        <label
+                          htmlFor="password"
+                          className="text-sm text-gray-600 ml-2"
+                        >
+                          Remember me for a week
+                        </label>
+                      </div>
+                      <div className="mt-4">
                         <button
                           type="submit"
                           className="w-full px-4 py-2 tracking-wide text-white transition-colors duration-300 transform bg-green-500 rounded-md hover:bg-green-400 focus:outline-none focus:bg-green-400 focus:ring focus:ring-green-300 focus:ring-opacity-50"

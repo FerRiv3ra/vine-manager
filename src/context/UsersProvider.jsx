@@ -3,6 +3,7 @@ import axiosClient from '../config/axiosClient';
 
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import moment from 'moment';
 
 const UsersContext = createContext();
 
@@ -66,13 +67,6 @@ const UsersProvider = ({ children }) => {
   };
 
   const unblockUser = async (id) => {
-    const [userE] = users.filter((user) => user.uid === id);
-    let toiletries = 3;
-    if (userE) {
-      if (userE.no_household - userE.child_cant > 1) {
-        toiletries = 6;
-      }
-    }
     try {
       const config = {
         headers: {
@@ -80,16 +74,12 @@ const UsersProvider = ({ children }) => {
         },
       };
 
-      const body = { blocked: false, role: 'USER_ROLE', toiletries };
+      const body = { blocked: false };
 
-      const { data } = await axiosClient.put(
-        `/users/${id}`,
-        JSON.stringify(body),
-        config
-      );
+      const { data } = await axiosClient.put(`/users/${id}`, body, config);
 
       setUsers(
-        users.filter((user) => {
+        users.map((user) => {
           if (user.uid === id) {
             return data;
           }
@@ -106,11 +96,10 @@ const UsersProvider = ({ children }) => {
 
   const editUser = async (userE) => {
     const { uid, confirmPass, password, ...body } = userE;
-    if (password !== '') {
-      body.password = password;
-    }
-    const [y, m, d] = body.dob.split('-');
-    body.dob = `${d}/${m}/${y}`;
+
+    const date = moment(dob, 'YYYY-MM-DD').format('DD/MM/YYYY');
+
+    body.dob = date;
 
     try {
       const config = {
@@ -126,7 +115,7 @@ const UsersProvider = ({ children }) => {
       );
 
       setUsers(
-        users.filter((user) => {
+        users.map((user) => {
           if (user.uid === uid) {
             return data;
           }
@@ -142,13 +131,10 @@ const UsersProvider = ({ children }) => {
   };
 
   const submitUser = async (user) => {
-    const { confirmPass, ...body } = user;
-    const [y, m, d] = body.dob.split('-');
-    body.dob = `${d}/${m}/${y}`;
+    const { dob, ...body } = user;
+    const date = moment(dob, 'YYYY-MM-DD').format('DD/MM/YYYY');
 
-    if (body.role.includes('USER')) {
-      body.password = 'Abc123';
-    }
+    body.dob = date;
 
     try {
       const config = {
@@ -178,11 +164,7 @@ const UsersProvider = ({ children }) => {
         },
       };
 
-      const { data } = await axiosClient.post(
-        `/deliveries`,
-        JSON.stringify(dataVisit),
-        config
-      );
+      const { data } = await axiosClient.post(`/visits`, dataVisit, config);
 
       return data;
     } catch (error) {

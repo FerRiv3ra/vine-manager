@@ -19,12 +19,12 @@ const Header = () => {
   return (
     <header className="px-4 py-5 bg-white border-b">
       <div className="md:flex md:justify-between">
-        <div className="flex items-center">
+        <Link to="/dashboard" className="flex items-center">
           <img src={Logo} className=" w-14 pr-3" />
           <h2 className="text-3xl text-green-600 font-black text-center">
             Manager
           </h2>
-        </div>
+        </Link>
         {pathname.includes('/users') && (
           <input
             type="search"
@@ -35,10 +35,10 @@ const Header = () => {
           />
         )}
         <div className="flex items-center gap-4">
-          <Link to="/events" className="font-bold uppercase">
+          {/* <Link to="events" className="font-bold uppercase">
             Events
-          </Link>
-          <Link to="/users" className="font-bold uppercase">
+          </Link> */}
+          <Link to="users" className="font-bold uppercase">
             Users
           </Link>
 

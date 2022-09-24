@@ -35,16 +35,10 @@ const UserProfile = () => {
       return;
     }
 
-    showAlert(
-      `User ${
-        user.role === 'USER_ROLE' ? user.customer_id : user.email
-      } deleted`,
-      false,
-      3000
-    );
+    showAlert(`User ${user.customerId} deleted`, false, 3000);
 
     setTimeout(() => {
-      navigate('/users');
+      navigate('dashboard/users');
     }, 3500);
   };
 
@@ -62,7 +56,7 @@ const UserProfile = () => {
       return;
     }
 
-    showAlert(`User ${user.customer_id} unblocked`, false, 3000);
+    showAlert(`User ${user.customerId} unblocked`, false, 3000);
   };
 
   return isLoading ? (
@@ -78,64 +72,44 @@ const UserProfile = () => {
       </div>
       <div className="flex justify-between">
         <div className="flex">
-          <h1 className="font-black text-3xl h-min w-auto">{user.name}</h1>
+          <h1 className="font-black text-3xl h-min w-auto">
+            {user.firstName} {user.lastName}
+          </h1>
           <p className="text-lg ml-10 bg-green-600 h-min py-2 px-4 rounded-full text-white font-bold">
-            {user.role === 'ADMIN_ROLE'
-              ? 'ADMIN'
-              : user.blocked
-              ? 'Blocked'
-              : `# ${user.customer_id}`}
+            {user.blocked ? 'Blocked' : `# ${user.customerId}`}
           </p>
         </div>
       </div>
 
       <div>
-        {user.role === 'USER_ROLE' && (
-          <p className="text-lg w-2/3">
-            <span className="font-black">Number in household:</span>{' '}
-            {user.child
-              ? `${user.no_household} (${user.child_cant} ${
-                  user.child_cant === 1 ? 'child' : 'children'
-                })`
-              : user.no_household}
-          </p>
-        )}
-        {user.email && !user.email.includes('@default') && (
-          <p className="text-lg w-3/4">
-            <span className="font-black">Email:</span> {user.email}
-          </p>
-        )}
+        <p className="text-lg w-2/3">
+          <span className="font-black">Number in household:</span>{' '}
+          {user.child
+            ? `${user.noHousehold} (${user.childCant} ${
+                user.childCant === 1 ? 'child' : 'children'
+              })`
+            : user.noHousehold}
+        </p>
         <p className="text-lg w-2/3">
           <span className="font-black">Phone:</span> {user.phone}
         </p>
         <p className="text-lg w-2/3">
           <span className="font-black">Postcode:</span> {user.postcode}
         </p>
-        {user.role === 'USER_ROLE' && (
-          <>
-            <p className="text-lg w-2/3">
-              <span className="font-black">Housing provider:</span>{' '}
-              {user.housing_provider}
-            </p>
-            <p className="text-lg w-auto text-center mt-4">
-              This user have{' '}
-              <span className="text-green-600 font-bold">
-                {user.blocked
-                  ? 0
-                  : user.visits === 0
-                  ? 4
-                  : 4 - (user.visits % 4)}
-              </span>{' '}
-              visits left
-            </p>
-          </>
-        )}
+
+        <p className="text-lg w-2/3">
+          <span className="font-black">Housing provider:</span>{' '}
+          {user.housingProvider}
+        </p>
+        <p className="text-lg w-auto text-center mt-4">
+          This user have{' '}
+          <span className="text-green-600 font-bold">
+            {user.blocked ? 0 : user.visits === 0 ? 4 : 4 - (user.visits % 4)}
+          </span>{' '}
+          visits left
+        </p>
       </div>
-      <p
-        className={`text-lg w-auto text-center ${
-          user.role === 'USER_ROLE' ? 'mt-6' : ' mt-16'
-        } font-semibold uppercase w-full`}
-      >
+      <p className={`text-lg text-center mt-6 font-semibold uppercase w-full`}>
         Actions
       </p>
       <div className="flex justify-around py-5 mt-1 rounded-xl bg-green-100">
@@ -155,7 +129,7 @@ const UserProfile = () => {
             />
           </svg>
           <Link
-            to={`/users/edit/${user.uid}`}
+            to={`/dashboard/users/edit/${user.uid}`}
             className="uppercase font-bold mx-3"
           >
             Edit
