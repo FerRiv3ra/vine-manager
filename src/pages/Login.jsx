@@ -5,7 +5,6 @@ import axiosClient from '../config/axiosClient';
 import Logo from '../assets/logovc.png';
 
 const Login = () => {
-  // TODO: Agregar remember me
   const regexStrong = new RegExp(
     '^(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9])(?=.*[a-z]).{8,}$'
   );
