@@ -9,7 +9,7 @@ const VerifyLogin = () => {
 
   const { token } = useParams();
 
-  const { setAuth } = useAuth();
+  const { setAuth, setIsLoading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -17,6 +17,7 @@ const VerifyLogin = () => {
       try {
         const { data } = await axiosClient(`/auth/login/${token}`);
 
+        setIsLoading(false);
         localStorage.setItem('x-token', data.token);
         setAuth(data.user);
         navigate('/dashboard');

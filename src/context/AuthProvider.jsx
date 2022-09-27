@@ -1,6 +1,5 @@
 import { createContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
 import axiosClient from '../config/axiosClient';
 
 const AuthContext = createContext();
@@ -49,7 +48,7 @@ const AuthProvider = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ auth, setAuth, isLoading }}>
+    <AuthContext.Provider value={{ auth, setAuth, isLoading, setIsLoading }}>
       {children}
     </AuthContext.Provider>
   );
