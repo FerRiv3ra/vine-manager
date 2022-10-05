@@ -13,6 +13,8 @@ const FormUser = () => {
 
   const radioPensionerYesRef = useRef(null);
   const radioPensionerNoRef = useRef(null);
+  const radioDisabilitiesYesRef = useRef(null);
+  const radioDisabilitiesNoRef = useRef(null);
   const radioChildNoRef = useRef(null);
   const radioChildYesRef = useRef(null);
 
@@ -23,31 +25,35 @@ const FormUser = () => {
 
   const [formValues, handleInputChange, reset, handleEdit] = useForm({
     address: '',
-    firstName: '',
-    lastName: '',
-    noHousehold: '',
     child: false,
     childCant: '',
+    disabilities: false,
     dob: '',
-    pensioner: false,
-    postcode: '',
+    firstName: '',
     housingProvider: '',
+    lastName: '',
+    noHousehold: '',
+    pensioner: false,
+    pensionerCant: '',
     phone: '',
+    postcode: '',
     town: '',
   });
 
   const {
     address,
-    firstName,
-    lastName,
-    noHousehold,
     child,
     childCant,
+    disabilities,
     dob,
-    postcode,
+    firstName,
     housingProvider,
-    phone,
+    lastName,
+    noHousehold,
     pensioner,
+    pensionerCant,
+    phone,
+    postcode,
     town,
   } = formValues;
 
@@ -68,6 +74,9 @@ const FormUser = () => {
 
         child: user.child,
         childCant: user.childCant,
+        pensioner: user.pensioner,
+        pensionerCant: user.pensionerCant,
+        disabilities: user.disabilities,
       });
       if (user.child) {
         radioChildYesRef.current.checked = true;
@@ -75,6 +84,10 @@ const FormUser = () => {
 
       if (user.pensioner) {
         radioPensionerYesRef.current.checked = true;
+      }
+
+      if (user.disabilities) {
+        radioDisabilitiesYesRef.current.checked = true;
       }
 
       setPolicy(true);
@@ -96,8 +109,13 @@ const FormUser = () => {
       return;
     }
 
-    if (child && childCant === 0) {
+    if (child && childCant < 1) {
       showAlert('Number of children is required');
+      return;
+    }
+
+    if (pensioner && pensionerCant < 1) {
+      showAlert('Number of pensioners is required');
       return;
     }
 
@@ -137,6 +155,9 @@ const FormUser = () => {
     }
     if (pensioner) {
       radioPensionerNoRef.current.checked = true;
+    }
+    if (disabilities) {
+      radioDisabilitiesNoRef.current.checked = true;
     }
     setPolicy(false);
     reset();
@@ -204,6 +225,8 @@ const FormUser = () => {
             onChange={(e) => handleInputChange(e, 'Number')}
           />
         </div>
+      </div>
+      <div>
         <label
           className="text-gray-700 uppercase font-bold text-sm text-center block"
           htmlFor="child"
@@ -406,6 +429,71 @@ const FormUser = () => {
             id="yes"
             name="pensioner"
             ref={radioPensionerYesRef}
+            value={true}
+            onClick={(e) => handleInputChange(e, 'Boolean')}
+            className="checked:accent-green-600"
+          />
+          <label
+            htmlFor="yes"
+            className="text-gray-700 uppercase font-bold text-sm"
+          >
+            {' '}
+            YES
+          </label>
+        </div>
+      </div>
+      {pensioner && (
+        <div>
+          <label
+            className="text-gray-700 uppercase font-bold text-sm"
+            htmlFor="pensionerCant"
+          >
+            How many pensioners? *
+          </label>
+          <input
+            id="pensionerCant"
+            type="number"
+            min="0"
+            name="pensionerCant"
+            className="border w-full p-2 mt-2 placeholder-gray-400 rounded-md"
+            placeholder="How many pensioners?"
+            value={pensionerCant}
+            onChange={(e) => handleInputChange(e, 'Number')}
+          />
+        </div>
+      )}
+      <label
+        className="text-gray-700 uppercase font-bold text-sm text-center block"
+        htmlFor="pensioner"
+      >
+        Do you have any disabilities?
+      </label>
+      <div className="flex justify-evenly">
+        <div>
+          <input
+            type="radio"
+            id="no"
+            name="disabilities"
+            value={false}
+            ref={radioDisabilitiesNoRef}
+            defaultChecked={true}
+            onClick={(e) => handleInputChange(e, 'Boolean')}
+            className="checked:accent-green-600"
+          />
+          <label
+            htmlFor="no"
+            className="text-gray-700 uppercase font-bold text-sm"
+          >
+            {' '}
+            NO
+          </label>
+        </div>
+        <div>
+          <input
+            type="radio"
+            id="yes"
+            name="disabilities"
+            ref={radioDisabilitiesYesRef}
             value={true}
             onClick={(e) => handleInputChange(e, 'Boolean')}
             className="checked:accent-green-600"

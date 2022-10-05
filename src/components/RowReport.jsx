@@ -15,8 +15,9 @@ export const RowReport = ({ visit, index }) => {
       <th className="px-2">{visit.town}</th>
       <th className="px-2">{visit.postcode}</th>
       <th className="px-2">{visit.housingProvider}</th>
-      <th className="px-2">{visit.pensioner ? 'Yes' : 'No'}</th>
-      <th className="px-2">{visit.amount}</th>
+      <th className="px-2">{visit.pensioner ? visit.pensionerCant : 'No'}</th>
+      <th className="px-2">{visit.disabilities ? 'Yes' : 'No'}</th>
+      <th className="px-2">£ {visit.amount}</th>
       <th className="px-2">{visit.visits}</th>
     </tr>
   );

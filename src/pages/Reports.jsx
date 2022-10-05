@@ -8,7 +8,7 @@ import useUsers from '../hooks/useUsers';
 const Reports = () => {
   const [loading, setLoading] = useState(false);
 
-  const [formValues, handleInputChange, reset] = useForm({
+  const [formValues, handleInputChange] = useForm({
     startDate: '',
     endDate: '',
   });
@@ -36,7 +36,6 @@ const Reports = () => {
       return;
     }
 
-    reset();
     setLoading(false);
   };
 
@@ -125,9 +124,10 @@ const Reports = () => {
                 <th className="px-2">Town</th>
                 <th className="px-2">Postcode</th>
                 <th className="px-2">Housing provider</th>
-                <th className="px-2">Pensioner</th>
+                <th className="px-2">Pensioners</th>
+                <th className="px-2">Disabilities</th>
                 <th className="px-2">Total donation</th>
-                <th className="px-2">Total visits</th>
+                <th className="px-2">Visits</th>
               </tr>
             </thead>
             <tbody>
