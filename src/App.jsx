@@ -19,6 +19,7 @@ import ForgotPassword from './pages/ForgotPassword';
 import NewPassword from './pages/NewPassword';
 import VerifyToken from './pages/VerifyToken';
 import Dashboard from './pages/Dashboard';
+import Reports from './pages/Reports';
 
 function App() {
   return (
@@ -51,6 +52,7 @@ function App() {
                 <Route path="users/new-user" element={<NewUser />} />
                 <Route path="users/:id" element={<UserProfile />} />
                 <Route path="users/edit/:id" element={<EditUser />} />
+                <Route path="reports" element={<Reports />} />
               </Route>
             </Routes>
           </UsersProvider>

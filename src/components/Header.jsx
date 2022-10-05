@@ -41,6 +41,9 @@ const Header = () => {
           <Link to="users" className="font-bold uppercase">
             Users
           </Link>
+          <Link to="reports" className="font-bold uppercase">
+            Reports
+          </Link>
 
           <button
             type="button"

@@ -25,8 +25,8 @@ export const useForm = (initialState = {}) => {
     });
   };
 
-  const handleEdit = (user) => {
-    setValues(user);
+  const handleEdit = (data) => {
+    setValues(data);
   };
 
   return [values, handleInputChange, reset, handleEdit];

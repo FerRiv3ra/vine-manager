@@ -11,6 +11,7 @@ const UsersProvider = ({ children }) => {
   const [users, setUsers] = useState([]);
   const [user, setUser] = useState({});
   const [search, setSearch] = useState('');
+  const [dataReport, setDataReport] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -172,6 +173,42 @@ const UsersProvider = ({ children }) => {
     }
   };
 
+  const getDataReport = async (startDate, finalDate) => {
+    try {
+      const { data } = await axiosClient('/visits', {
+        params: {
+          startDate,
+          finalDate,
+        },
+      });
+
+      const users = data.usersArr.map((user) => {
+        const amount = data.visits.reduce((total, visit) => {
+          if (visit.customerId === user.customerId) {
+            total += visit.amount;
+          }
+
+          return total;
+        }, 0);
+
+        user.amount = amount;
+
+        return user;
+      });
+
+      setDataReport(users);
+      return {
+        ok: true,
+      };
+    } catch (error) {
+      console.log(error);
+      return {
+        ok: false,
+        msg: error.response.data.msg,
+      };
+    }
+  };
+
   return (
     <UsersContext.Provider
       value={{
@@ -187,6 +224,8 @@ const UsersProvider = ({ children }) => {
         search,
         setSearch,
         addVisit,
+        getDataReport,
+        dataReport,
       }}
     >
       {children}

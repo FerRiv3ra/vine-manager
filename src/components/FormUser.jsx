@@ -307,23 +307,6 @@ const FormUser = () => {
       <div>
         <label
           className="text-gray-700 uppercase font-bold text-sm"
-          htmlFor="postcode"
-        >
-          Postcode *
-        </label>
-        <input
-          id="postcode"
-          type="text"
-          name="postcode"
-          className="border w-full p-2 mt-2 placeholder-gray-400 rounded-md uppercase"
-          placeholder="Postcode"
-          value={postcode}
-          onChange={handleInputChange}
-        />
-      </div>
-      <div>
-        <label
-          className="text-gray-700 uppercase font-bold text-sm"
           htmlFor="town"
         >
           Town *
@@ -335,6 +318,23 @@ const FormUser = () => {
           className="border w-full p-2 mt-2 placeholder-gray-400 rounded-md uppercase"
           placeholder="Town"
           value={town}
+          onChange={handleInputChange}
+        />
+      </div>
+      <div>
+        <label
+          className="text-gray-700 uppercase font-bold text-sm"
+          htmlFor="postcode"
+        >
+          Postcode *
+        </label>
+        <input
+          id="postcode"
+          type="text"
+          name="postcode"
+          className="border w-full p-2 mt-2 placeholder-gray-400 rounded-md uppercase"
+          placeholder="Postcode"
+          value={postcode}
           onChange={handleInputChange}
         />
       </div>
