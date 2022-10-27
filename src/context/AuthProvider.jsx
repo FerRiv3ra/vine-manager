@@ -15,6 +15,15 @@ const AuthProvider = ({ children }) => {
       const token = localStorage.getItem('x-token');
       const autoLogin = localStorage.getItem('rememberMe');
 
+      const config = {
+        headers: {
+          'Content-Type': 'application/json',
+          'x-token': token,
+        },
+      };
+
+      await axiosClient('/visits/0', config);
+
       if (!autoLogin) {
         localStorage.removeItem('x-token');
       } else {
@@ -22,13 +31,6 @@ const AuthProvider = ({ children }) => {
           setIsLoading(false);
           return;
         }
-
-        const config = {
-          headers: {
-            'Content-Type': 'application/json',
-            'x-token': token,
-          },
-        };
 
         try {
           const { data } = await axiosClient('/auth/login', config);
