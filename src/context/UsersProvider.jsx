@@ -13,6 +13,7 @@ const UsersProvider = ({ children }) => {
   const [search, setSearch] = useState('');
   const [dataReport, setDataReport] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [visits, setVisits] = useState([]);
 
   useEffect(() => {
     const getUsers = async () => {
@@ -154,6 +155,31 @@ const UsersProvider = ({ children }) => {
     }
   };
 
+  const getVisits = async () => {
+    try {
+      const { data } = await axiosClient(`/visits`);
+
+      setVisits(data.visits);
+
+      return { ok: true };
+    } catch (error) {
+      return { ok: false, error: error.response.data };
+    }
+  };
+
+  const deleteVisit = async (uid) => {
+    try {
+      await axiosClient.delete(`/visits/${uid}`);
+
+      setVisits(visits.filter((visit) => visit._id !== uid));
+
+      return { ok: true };
+    } catch (error) {
+      console.log(error.response.data);
+      return { ok: false, error: error.response.data };
+    }
+  };
+
   const addVisit = async (dataVisit) => {
     const token = localStorage.getItem('x-token');
 
@@ -212,20 +238,23 @@ const UsersProvider = ({ children }) => {
   return (
     <UsersContext.Provider
       value={{
-        users,
-        submitUser,
-        getUser,
-        user,
-        isLoading,
+        addVisit,
+        dataReport,
         deleteUser,
-        showAlert,
-        unblockUser,
         editUser,
+        deleteVisit,
+        getDataReport,
+        getUser,
+        getVisits,
+        isLoading,
         search,
         setSearch,
-        addVisit,
-        getDataReport,
-        dataReport,
+        showAlert,
+        submitUser,
+        unblockUser,
+        user,
+        users,
+        visits,
       }}
     >
       {children}

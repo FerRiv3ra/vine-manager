@@ -44,6 +44,9 @@ const Header = () => {
           <Link to="reports" className="font-bold uppercase">
             Reports
           </Link>
+          <Link to="visits" className="font-bold uppercase">
+            Visits
+          </Link>
 
           <button
             type="button"

@@ -20,6 +20,7 @@ import NewPassword from './pages/NewPassword';
 import VerifyToken from './pages/VerifyToken';
 import Dashboard from './pages/Dashboard';
 import Reports from './pages/Reports';
+import { Visits } from './pages/Visits';
 
 function App() {
   return (
@@ -53,6 +54,7 @@ function App() {
                 <Route path="users/:id" element={<UserProfile />} />
                 <Route path="users/edit/:id" element={<EditUser />} />
                 <Route path="reports" element={<Reports />} />
+                <Route path="visits" element={<Visits />} />
               </Route>
             </Routes>
           </UsersProvider>
